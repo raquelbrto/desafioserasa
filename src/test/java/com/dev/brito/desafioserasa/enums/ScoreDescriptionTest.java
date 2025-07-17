@@ -1,5 +1,6 @@
 package com.dev.brito.desafioserasa.enums;
 
+import com.dev.brito.desafioserasa.exceptions.InvalidScoreException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,7 @@ class ScoreDescriptionTest {
 
     @Test
     void shouldReturnInvalidDescriptionWhenOutOfBounds() {
-        assertEquals("Score inválido", ScoreDescription.fromScore(-1));
-        assertEquals("Score inválido", ScoreDescription.fromScore(1001));
+        assertThrows(InvalidScoreException.class, () -> ScoreDescription.fromScore(-1));
+        assertThrows(InvalidScoreException.class, () -> ScoreDescription.fromScore(1001));
     }
 }
