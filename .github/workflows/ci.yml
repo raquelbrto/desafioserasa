@@ -30,5 +30,14 @@ jobs:
       - name: Executar testes
         run: mvn test
 
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectKey: ${{ secrets.PROJECT_KEY }}
+          organization: ${{ secrets.ORGANIZATION_KEY }}
+          token: ${{ secrets.SONAR_KEY }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Docker image
         run: docker build -t desafioserasa-app .
