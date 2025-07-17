@@ -9,7 +9,6 @@ import com.dev.brito.desafioserasa.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,10 +48,6 @@ public class AuthenticationController {
     @Operation(
             summary = "Autenticar usuário (login)",
             description = "Autentica um usuário e retorna um token JWT.",
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = AuthenticationDTO.class))
-            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Login realizado com sucesso, retorna o token JWT",
                             content = @Content(schema = @Schema(implementation = LoginResponseDTO.class))),
@@ -77,10 +73,6 @@ public class AuthenticationController {
     @Operation(
             summary = "Registrar novo usuário",
             description = "Registra um novo usuário no sistema. Apenas administradores e usuários autenticados podem registrar novos usuários.",
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = RegisterDTO.class))
-            ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuário registrado com sucesso", content = @Content),
                     @ApiResponse(responseCode = "400", description = "Usuário já existe ou requisição inválida", content = @Content)
