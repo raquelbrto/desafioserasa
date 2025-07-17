@@ -4,6 +4,13 @@ import com.dev.brito.desafioserasa.dto.PersonRequestDTO;
 import com.dev.brito.desafioserasa.dto.PersonResponseDTO;
 import com.dev.brito.desafioserasa.exceptions.PersonNotFoundException;
 import com.dev.brito.desafioserasa.service.PersonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +29,15 @@ public class PersonController {
         this.personService = personService;
     }
 
+    @Operation(
+            summary = "Salvar uma nova pessoa",
+            description = "Adiciona uma nova pessoa ao sistema e retorna os dados da pessoa criada.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Pessoa criada com sucesso",
+                            content = @Content(schema = @Schema(implementation = PersonResponseDTO.class))),
+                    @ApiResponse(responseCode = "500", description = "Erro no servidor", content = @Content)
+            }
+    )
     @PostMapping
     public ResponseEntity<PersonResponseDTO> createPerson(@RequestBody PersonRequestDTO personRequestDTO) {
         PersonResponseDTO response = personService.createPerson(personRequestDTO);
@@ -57,6 +73,19 @@ public class PersonController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Atualizar todos os dados de uma pessoa",
+            description = "Atualiza todos os dados de uma pessoa existente pelo seu identificador (id).",
+            parameters = {
+                    @Parameter(name = "id", description = "ID da pessoa", required = true, example = "1")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pessoa atualizada com sucesso",
+                            content = @Content(schema = @Schema(implementation = PersonResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Pessoa não encontrada", content = @Content),
+                    @ApiResponse(responseCode = "500", description = "Erro no servidor", content = @Content)
+            }
+    )
     @PutMapping("/{id}")
     public ResponseEntity<PersonResponseDTO> updateAllPerson(
             @PathVariable Long id,
