@@ -35,7 +35,7 @@ public class Person {
     @Column(name = "score_description")
     private String scoreDescription;
     
-    private Boolean active = true;
+    private Boolean active;
 
     public Long getId() {
         return id;

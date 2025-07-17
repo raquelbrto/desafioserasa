@@ -3,6 +3,7 @@ package com.dev.brito.desafioserasa.service;
 import com.dev.brito.desafioserasa.client.BrasilApiClient;
 import com.dev.brito.desafioserasa.client.ViaCepApiClient;
 import com.dev.brito.desafioserasa.dto.AddressDTO;
+import com.dev.brito.desafioserasa.exceptions.AddressNotFoundException;
 import com.dev.brito.desafioserasa.mapper.AddressMapper;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,22 @@ public class AddressService {
     public AddressDTO findAddress(String zipCode) {
         log.info("Buscando endereço na api via cep para CEP: {}", zipCode);
 
-        return addressMapper.toAddressDTO(viaCepClient.findAddressViaCep(zipCode));
+        var viaCepResponse = viaCepClient.findAddressViaCep(zipCode);
+        if (viaCepResponse == null) {
+            throw new AddressNotFoundException(zipCode);
+        }
+
+        return addressMapper.toAddressDTO(viaCepResponse);
     }
 
     public AddressDTO failBackFindAddress(String zipCode, Exception e) {
         log.error("Fallback acionado apos tentativas de retry para o zipCode: {} - Erro: {}", zipCode, e.getMessage());
+
+        var brasilApiResponse = brasilApiClient.findAddressBrasilia(zipCode);
+        if (brasilApiResponse == null) {
+            throw new AddressNotFoundException(zipCode);
+        }
+
         return addressMapper.toAddressDTO(brasilApiClient.findAddressBrasilia(zipCode));
     }
 }
