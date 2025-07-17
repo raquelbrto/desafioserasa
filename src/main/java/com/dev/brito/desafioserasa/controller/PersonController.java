@@ -75,7 +75,8 @@ public class PersonController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Página de pessoas retornada com sucesso",
                             content = @Content(schema = @Schema(implementation = org.springframework.data.domain.Page.class))),
-                    @ApiResponse(responseCode = "500", description = "Erro no servidor", content = @Content)
+                    @ApiResponse(responseCode = "500", description = "Erro no servidor", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "Filtro invalido", content = @Content)
             }
     )
     @GetMapping("/search-filter")
