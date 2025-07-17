@@ -24,21 +24,21 @@ public class PersonSpecification {
         return spec;
     }
 
-    public static Specification<Person> activeTrue() {
+    private static Specification<Person> activeTrue() {
         return (root, query, builder) -> builder.isTrue(root.get("active"));
     }
 
-    public static Specification<Person> nameContains(String name) {
+    private static Specification<Person> nameContains(String name) {
         return (root, query, builder) ->
                 builder.like(builder.lower(root.get("name")), "%" + name.toLowerCase() + "%");
     }
 
-    public static Specification<Person> ageEquals(Integer age) {
+    private static Specification<Person> ageEquals(Integer age) {
         return (root, query, builder) ->
                 builder.equal(root.get("age"), age);
     }
 
-    public static Specification<Person> zipCodeEquals(String zipCode) {
+    private static Specification<Person> zipCodeEquals(String zipCode) {
         return (root, query, builder) ->
                 builder.equal(root.get("zipCode"), zipCode);
     }
