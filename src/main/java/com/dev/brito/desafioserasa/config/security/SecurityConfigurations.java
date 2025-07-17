@@ -1,5 +1,7 @@
 package com.dev.brito.desafioserasa.config.security;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,10 +17,18 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@SecurityScheme(
+        name = SecurityConfigurations.SECURITY,
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT",
+        description = "Autenticação via token JWT no header Authorization. Exemplo: 'Bearer {token}'"
+)
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
 
+    public static final String SECURITY = "bearerAuth";
     private final SecurityFilter securityFilter;
 
     public SecurityConfigurations(SecurityFilter securityFilter) {
