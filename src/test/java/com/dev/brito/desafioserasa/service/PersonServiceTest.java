@@ -54,8 +54,7 @@ class PersonServiceTest {
                 "84994885502",
                 27,
                 "59215000",
-                1000,
-                true
+                1000
         );
 
         sampleResponse = new PersonResponseDTO(
