@@ -1,5 +1,7 @@
 package com.dev.brito.desafioserasa.enums;
 
+import com.dev.brito.desafioserasa.exceptions.InvalidScoreException;
+
 public enum ScoreDescription {
     INSUFFICIENT(0, 200, "Insuficiente"),
     UNACCEPTABLE(201, 500, "Inaceitável"),
@@ -22,6 +24,7 @@ public enum ScoreDescription {
                 return sd.description;
             }
         }
-        return "Score inválido";
+
+        throw new InvalidScoreException();
     }
 }

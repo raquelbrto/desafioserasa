@@ -24,9 +24,9 @@ public class AuthenticationController {
     private static final Log logger = LogFactory.getLog(AuthenticationController.class);
 
     private final AuthenticationManager authenticationManager;
-    
+
     private final UserRepository repository;
-    
+
     private final TokenService tokenService;
 
     public AuthenticationController(AuthenticationManager authenticationManager, UserRepository repository, TokenService tokenService) {
@@ -36,7 +36,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+    public ResponseEntity login(@RequestBody @Valid AuthenticationDTO authenticationDTO) {
         try {
             var usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -51,8 +51,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDTO){
-        if(this.repository.findByLogin(registerDTO.login()) != null) return ResponseEntity.badRequest().build();
+    public ResponseEntity register(@RequestBody @Valid RegisterDTO registerDTO) {
+        if (this.repository.findByLogin(registerDTO.login()) != null) return ResponseEntity.badRequest().build();
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
         User newUser = new User(registerDTO.login(), encryptedPassword, registerDTO.role());

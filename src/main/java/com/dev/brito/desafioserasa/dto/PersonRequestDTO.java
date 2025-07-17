@@ -6,7 +6,8 @@ public record PersonRequestDTO(
     String phone,
     int age,
     String zipCode,
-    int score
+    int score,
+    boolean active
 ) {
    
 }

@@ -2,6 +2,7 @@ package com.dev.brito.desafioserasa.controller;
 
 import com.dev.brito.desafioserasa.dto.PersonRequestDTO;
 import com.dev.brito.desafioserasa.dto.PersonResponseDTO;
+import com.dev.brito.desafioserasa.exceptions.PersonNotFoundException;
 import com.dev.brito.desafioserasa.service.PersonService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,9 +46,9 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponseDTO> getPersonById(@PathVariable Long id) {
-        return personService.getPersonById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        PersonResponseDTO person = personService.getPersonById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+        return ResponseEntity.ok(person);
     }
 
     @DeleteMapping("/{id}")
@@ -57,10 +58,16 @@ public class PersonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonResponseDTO> updatePerson(
-            @PathVariable Long id, 
+    public ResponseEntity<PersonResponseDTO> updateAllPerson(
+            @PathVariable Long id,
             @RequestBody PersonRequestDTO personRequestDTO) {
-        personService.updatePerson(id, personRequestDTO);
-        return ResponseEntity.noContent().build();
+        PersonResponseDTO response = personService.updatePerson(id, personRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<PersonResponseDTO> activatePerson(@PathVariable Long id) {
+        PersonResponseDTO activatedPerson = personService.activatePerson(id);
+        return ResponseEntity.ok(activatedPerson);
     }
 }
