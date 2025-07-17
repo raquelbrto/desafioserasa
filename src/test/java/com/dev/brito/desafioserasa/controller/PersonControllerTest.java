@@ -44,19 +44,10 @@ class PersonControllerTest {
     @MockitoBean
     private TokenService tokenService;
 
-    private PersonRequestDTO sampleRequest;
     private PersonResponseDTO sampleResponse;
 
     @BeforeEach
     void setup() {
-        sampleRequest = new PersonRequestDTO(
-                "Raquel",
-                "raquel.aves@gmail.com",
-                "84994885502",
-                27,
-                "59215000",
-                1000
-        );
 
         sampleResponse = new PersonResponseDTO(
                 1L,

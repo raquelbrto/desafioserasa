@@ -1,5 +1,6 @@
 package com.dev.brito.desafioserasa.controller;
 
+import com.dev.brito.desafioserasa.config.security.SecurityConfigurations;
 import com.dev.brito.desafioserasa.dto.PersonRequestDTO;
 import com.dev.brito.desafioserasa.dto.PersonResponseDTO;
 import com.dev.brito.desafioserasa.exceptions.PersonNotFoundException;
@@ -19,8 +20,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(
+        name = "Person",
+        description = "Operações relacionadas à entidade Person"
+)
 @RestController
 @RequestMapping("/api/v1/persons")
+@SecurityRequirement(name = SecurityConfigurations.SECURITY)
 public class PersonController {
 
     private final PersonService personService;
@@ -87,16 +93,30 @@ public class PersonController {
             }
     )
     @PutMapping("/{id}")
-    public ResponseEntity<PersonResponseDTO> updateAllPerson(
+    public ResponseEntity<PersonResponseDTO> updatePerson(
             @PathVariable Long id,
             @RequestBody PersonRequestDTO personRequestDTO) {
         PersonResponseDTO response = personService.updatePerson(id, personRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(
+            summary = "Ativar uma pessoa",
+            description = "Ativa uma pessoa inativa pelo seu identificador (id). Lança erro se a pessoa não existir ou já estiver ativa.",
+            parameters = {
+                    @Parameter(name = "id", description = "ID da pessoa", required = true, example = "1")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pessoa ativada com sucesso",
+                            content = @Content(schema = @Schema(implementation = PersonResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Pessoa não encontrada", content = @Content),
+                    @ApiResponse(responseCode = "409", description = "Pessoa já está ativa", content = @Content),
+                    @ApiResponse(responseCode = "500", description = "Erro no servidor", content = @Content)
+            }
+    )
     @PutMapping("/{id}/activate")
-    public ResponseEntity<PersonResponseDTO> activatePerson(@PathVariable Long id) {
-        PersonResponseDTO activatedPerson = personService.activatePerson(id);
-        return ResponseEntity.ok(activatedPerson);
+    public ResponseEntity<Void> activatePerson(@PathVariable Long id) {
+        personService.activatePerson(id);
+        return ResponseEntity.noContent().build();
     }
 }

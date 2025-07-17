@@ -6,6 +6,7 @@ import com.dev.brito.desafioserasa.dto.PersonResponseDTO;
 import com.dev.brito.desafioserasa.entity.Person;
 import com.dev.brito.desafioserasa.exceptions.PersonAlreadyActiveException;
 import com.dev.brito.desafioserasa.exceptions.PersonAlreadyInactiveException;
+import com.dev.brito.desafioserasa.exceptions.PersonNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import com.dev.brito.desafioserasa.mapper.PersonMapper;
 import com.dev.brito.desafioserasa.repository.PersonRepository;
@@ -105,9 +106,8 @@ class PersonServiceTest {
         when(personRepository.save(person)).thenReturn(updatedPerson);
         when(personMapper.toResponseDTO(updatedPerson)).thenReturn(sampleResponse);
 
-        PersonResponseDTO result = personService.activatePerson(1L);
+       personService.activatePerson(1L);
 
-        assertThat(result).isEqualTo(sampleResponse);
         assertThat(person.getActive()).isTrue();
     }
 
@@ -176,7 +176,7 @@ class PersonServiceTest {
         when(personRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> personService.deletePerson(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(PersonNotFoundException.class);
     }
 
     @Test
