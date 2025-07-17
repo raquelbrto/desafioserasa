@@ -11,7 +11,7 @@ import com.dev.brito.desafioserasa.exceptions.PersonAlreadyInactiveException;
 import com.dev.brito.desafioserasa.exceptions.PersonNotFoundException;
 import com.dev.brito.desafioserasa.mapper.PersonMapper;
 import com.dev.brito.desafioserasa.repository.PersonRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.dev.brito.desafioserasa.specification.PersonSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -45,17 +45,15 @@ public class PersonService {
         return personMapper.toResponseDTO(personSaved);
     }
 
-    public PersonResponseDTO activatePerson(Long id) {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
+    public void activatePerson(Long id) {
+        Person person = findPerson(id);
 
         if (Boolean.TRUE.equals(person.getActive())) {
             throw new PersonAlreadyActiveException("Person is already active");
         }
 
         person.setActive(true);
-        Person updated = personRepository.save(person);
-        return personMapper.toResponseDTO(updated);
+        personRepository.save(person);
     }
 
     public List<PersonResponseDTO> getAllPersons() {
@@ -70,8 +68,7 @@ public class PersonService {
     }
 
     public void deletePerson(Long id) {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));
+        Person person = findPerson(id);
 
         if (Boolean.FALSE.equals(person.getActive())) {
             throw new PersonAlreadyInactiveException("Person already inactive with id: " + id);
@@ -82,8 +79,7 @@ public class PersonService {
     }
 
     public PersonResponseDTO updatePerson(Long id, PersonRequestDTO personRequestDTO) {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));
+        Person person = findPerson(id);
 
         person.setScoreDescription(scoreDescription(personRequestDTO.score()));
         buildAddressPerson(person, personRequestDTO.zipCode());
@@ -96,42 +92,10 @@ public class PersonService {
     public Page<PersonResponseDTO> filterPersons(String name, Integer age, String zipCode, Pageable pageable) {
         validateFilters(name, age, zipCode);
 
-        Specification<Person> spec = (root, query, builder) -> null;
-        spec = spec.and(activeTrue());
+        Specification<Person> spec = PersonSpecification.build(name, age, zipCode);
 
-        if (name != null && !name.isBlank()) {
-            spec = spec.and(nameContains(name));
-        }
-
-        if (age != null) {
-            spec = spec.and(ageEquals(age));
-        }
-
-        if (zipCode != null && !zipCode.isBlank()) {
-            spec = spec.and(zipCodeEquals(zipCode));
-        }
-
-        Page<Person> page = personRepository.findAll(spec, pageable);
-        return page.map(personMapper::toResponseDTO);
-    }
-
-    private Specification<Person> activeTrue() {
-        return (root, query, builder) -> builder.isTrue(root.get("active"));
-    }
-
-    private Specification<Person> nameContains(String name) {
-        return (root, query, builder) ->
-                builder.like(builder.lower(root.get("name")), "%" + name.toLowerCase() + "%");
-    }
-
-    private Specification<Person> ageEquals(Integer age) {
-        return (root, query, builder) ->
-                builder.equal(root.get("age"), age);
-    }
-
-    private Specification<Person> zipCodeEquals(String zipCode) {
-        return (root, query, builder) ->
-                builder.equal(root.get("zipCode"), zipCode);
+        return personRepository.findAll(spec, pageable)
+                .map(personMapper::toResponseDTO);
     }
 
     private String scoreDescription(int score) {
@@ -158,5 +122,10 @@ public class PersonService {
         if (zipCode != null && zipCode.length() > 8) {
             throw new InvalidPersonFilterException("CEP deve ter no máximo 8 caracteres");
         }
+    }
+
+    private Person findPerson(Long id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
     }
 }
