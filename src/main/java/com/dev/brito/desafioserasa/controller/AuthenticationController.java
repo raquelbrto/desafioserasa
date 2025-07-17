@@ -23,14 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(
-        name = "Autenticação",
-        description = "Endpoints para login e registro de usuários. Fornece autenticação JWT para acesso à API."
-)
 @RestController
 @RequestMapping("api/v1/auth")
 public class AuthenticationController {
-
     private static final Log logger = LogFactory.getLog(AuthenticationController.class);
 
     private final AuthenticationManager authenticationManager;
