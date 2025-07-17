@@ -3,7 +3,6 @@ package com.dev.brito.desafioserasa.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "persons")
 public class Person {
 
     @Id
